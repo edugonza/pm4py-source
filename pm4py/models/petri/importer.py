@@ -31,6 +31,7 @@ def import_petri_from_pnml(inputFilePath):
     transInvis = False
     isInitialMarking = False
     initialMarkingCount = 0
+    readingMarking = ""
 
     for tree_event, elem in context:
 
@@ -39,12 +40,14 @@ def import_petri_from_pnml(inputFilePath):
                 isInitialMarking = False
                 readingWhat = "place"
                 readingId = elem.get("id")
+                readingMarking = elem.get("initilMarking")
             elif "transition" in elem.tag:
                 readingWhat = "transition"
                 readingId = elem.get("id")
                 transition = petri.net.PetriNet.Transition(readingId, None)
                 transDict[readingId] = transition
             elif "initialMarking" in elem.tag:
+                print('inside initialmarking')
                 readingWhat = "initialMarking"
             elif "text" in elem.tag:
                 elementText = elem.text
@@ -64,6 +67,7 @@ def import_petri_from_pnml(inputFilePath):
                         initialMarkingCount = 0
                     if initialMarkingCount > 0:
                         markingDict[placesDict[readingId]] = initialMarkingCount
+                        print('initial mark count ', initialMarkingCount)
             elif "toolspecific" in elem.tag:
                 if readingWhat == "transition":
                     activity = elem.get("activity")
@@ -80,6 +84,7 @@ def import_petri_from_pnml(inputFilePath):
                 readingWhat = 0
                 readingWhat = ""
                 transInvis = False
+
     for placeName in placesDict.keys():
         place = placesDict[placeName]
         net.places.add(place)
